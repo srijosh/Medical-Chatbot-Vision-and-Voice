@@ -23,18 +23,25 @@ def text_to_speech_with_gtts(input_text, output_filepath):
         slow=False
     )
     audioobj.save(output_filepath)
+    wav_filepath = "final.wav"
+
+    # Convert MP3 to WAV
+    sound = AudioSegment.from_mp3(output_filepath)
+    sound.export(wav_filepath, format="wav")
+
     os_name = platform.system()
     try:
         if os_name == "Darwin":  # macOS
             subprocess.run(['afplay', output_filepath])
         elif os_name == "Windows":  # Windows
-            subprocess.run(['powershell', '-c', f'(New-Object Media.SoundPlayer "{output_filepath}").PlaySync();'])
+            subprocess.run(['powershell', '-c', f'(New-Object Media.SoundPlayer "{wav_filepath}").PlaySync();'])
         elif os_name == "Linux":  # Linux
             subprocess.run(['aplay', output_filepath])
         else:
             raise OSError("Unsupported operating system")
     except Exception as e:
         print(f"An error occurred while trying to play the audio: {e}")
+    return output_filepath
 
 # input_text="Hi this is Srijan Joshi from Nepal. I am learning AI. I am testing the text to speech model with gTTS."
 #text_to_speech_with_gtts(input_text=input_text, output_filepath="gtts_testing.mp3")
